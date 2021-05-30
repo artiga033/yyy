@@ -220,6 +220,44 @@
         #text-input {
             width: 40%;
         }
+
+        #imageviewer {
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 25px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        #modal-content {
+            margin: auto;
+            display: block;
+            max-height: 80%;
+        }
+
+        .toolbar {
+            justify-content: space-evenly;
+        }
+
+        #closeViewer {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #858585;
+        }
+
+        #caption {
+            text-align: center;
+            color: rgb(94, 94, 94);
+        }
     </style>
 </head>
 
@@ -268,6 +306,15 @@
                 </div>
                 <div id="aplayer"></div>
                 <div id="dplayer"></div>
+                <div id="imageviewer">
+                    <i id="closeViewer" class="mdui-icon material-icons">close</i>
+                    <img id="modal-content">
+                    <div class="mdui-toolbar toolbar">
+                        <i class="mdui-icon material-icons" onclick="previousImage()">arrow_back</i>
+                        <span id="caption"></span>
+                        <i class="mdui-icon material-icons" onclick="nextImage()">arrow_forward</i>
+                    </div>
+                </div>
             </div>
 
 
@@ -294,7 +341,8 @@
                 rawData = "{{.RawData}}",
                 title = 'storage - ',
                 downloadLink = '',
-                vedioIndex = 0
+                vedioIndex = 0,
+                imageIndex = 0;
             if (currentPath === "/") {
                 currentPath = ""
             }
@@ -303,6 +351,7 @@
                 arrayPath = new Array(),
                 arrayFloder = new Array(),
                 arryVideo = new Array(),
+                arryImage = new Array(),
                 arrayFile = new Array();
 
 
@@ -312,6 +361,9 @@
                 }
                 if (getFileType(decodeURIComponent(pageData[item]['name'])) == "video") {
                     arryVideo.push(decodeURIComponent(pageData[item]['name']));
+                }
+                if (getFileType(decodeURIComponent(pageData[item]['name'])) == "image") {
+                    arryImage.push(decodeURIComponent(pageData[item]['name']));
                 }
                 if (pageData[item]['@type'] == 'file') {
                     arrayFile.push(pageData[item]);
@@ -439,10 +491,10 @@
                     let itemName = decodeURIComponent(items[item]['name']);
                     let href = 'http://' + domain + currentPath + '/' + itemName;
 
-                    let vediospan = getIcon(href, items[item])
+                    let iconspan = getIcon(href, items[item])
                     newChild.innerHTML = `
                 <div class="file">
-                    ${vediospan}
+                    ${iconspan}
                     <a href="${href}">
                         <span class="name mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">${itemName}</span>
                         <span class="time mdui-col-sm-3 mdui-text-right">${items[item]['date']}</span>
@@ -469,6 +521,10 @@
                 if (getFileType(itemName) == "audio") {
                     icon = 'audiotrack';
                     clickCode = `onclick="audioAdd('${url}','${item['name']}')"`;
+                }
+                if (getFileType(itemName) == "image") {
+                    icon = 'photo';
+                    clickCode = `onclick="viewImage('${url}','${item['name']}')"`;
                 }
 
                 let code = `<i class="mdui-icon material-icons" ${clickCode}>${icon}</i>`
@@ -567,6 +623,15 @@
                 }]);
             }
 
+            function viewImage(url, filename) {
+                let modal = document.getElementById("imageviewer");
+                let img = document.getElementById("modal-content");
+                img.src = url;
+                img.alt = filename;
+                document.getElementById("caption").innerHTML = img.alt;
+                modal.style.display = "block";
+                document.getElementById("closeViewer").onclick = function () { modal.style.display = "none" };
+            }
 
             function fixedControlerButton() {
                 let div = document.getElementById('dplayer');
@@ -607,6 +672,23 @@
                     link = 'http://' + domain + currentPath + '/' + arryVideo[vedioIndex];
                     console.log(link);
                     dplayeropen(link);
+                }
+            }
+
+            function nextImage() {
+                if (imageIndex < arryImage.length - 1) {
+                    imageIndex = imageIndex + 1;
+                    link = 'http://' + domain + currentPath + '/' + arryImage[imageIndex];
+                    console.log(link);
+                    viewImage(link, arryImage[imageIndex])
+                }
+            }
+            function previousImage() {
+                if (imageIndex < arryImage.length - 1) {
+                    imageIndex = imageIndex - 1;
+                    link = 'http://' + domain + currentPath + '/' + arryImage[imageIndex];
+                    console.log(link);
+                    viewImage(link, arryImage[imageIndex])
                 }
             }
 
