@@ -15,7 +15,6 @@
     <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js"></script>
     <script src="//www.mdui.org/source/dist/js/mdui.min.js"></script>
 
-
     <style>
         body {
             background-color: #f2f5fa
@@ -317,8 +316,6 @@
                 </div>
             </div>
 
-
-
         </div>
         <div class="mdui-container-fluid">
             <div class="nexmoe-item list-wrapper">
@@ -372,7 +369,6 @@
                     arrayFloder.push(pageData[item]);
                 }
             }
-            console.log(arryVideo)
 
             function goto(thePath) {
                 window.location.href = thePath;
@@ -488,7 +484,8 @@
                     let newChild = document.createElement("div");
 
                     newChild.setAttribute('class', 'row file-wrapper mdui-list-item mdui-ripple');
-                    let itemName = decodeURIComponent(items[item]['name']);
+                    let itemName = items[item]['name'];
+                    let itemNameDecoded = decodeURIComponent(itemName);
                     let href = 'http://' + domain + currentPath + '/' + itemName;
 
                     let iconspan = getIcon(href, items[item])
@@ -496,7 +493,7 @@
                 <div class="file">
                     ${iconspan}
                     <a href="${href}">
-                        <span class="name mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">${itemName}</span>
+                        <span class="name mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">${itemNameDecoded}</span>
                         <span class="time mdui-col-sm-3 mdui-text-right">${items[item]['date']}</span>
                         <span class="size mdui-col-sm-2 mdui-text-right">${items[item]['size']}</span>
                     </a>
@@ -534,8 +531,8 @@
 
             function getFileType(name) {
                 if (!name) return false;
-                var imgType = ["gif", "jpeg", "jpg", "bmp", "png"];
-                var videoType = ["avi", "wmv", "mkv", "mp4", "mov", "rm", "3gp", "flv", "mpg", "rmvb"];
+                var imgType = ["gif", "jpeg", "jpg", "bmp", "png", "webp"];
+                var videoType = ["avi", "wmv", "mkv", "mp4", "mov", "rm", "3gp", "flv", "mpg", "rmvb", "webm"];
                 var audioType = ["mp3", "m4a", "wma", "wav", "ape", "flac", "acc", "ogg"];
                 if (RegExp("\.(" + imgType.join("|") + ")$", "i").test(name.toLowerCase())) {
                     return 'image';
